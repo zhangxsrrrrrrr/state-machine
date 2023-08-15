@@ -33,12 +33,12 @@ public interface IState {
   void reset();
 
   /**
-   * 开始执行状态逻辑
+   * 开启状态机
    */
   void start();
 
   /**
-   * 执行状态的初始化逻辑
+   * 执行状态的当前状态的初始化逻辑
    */
   void initialize(StateData data) throws Exception;
 
