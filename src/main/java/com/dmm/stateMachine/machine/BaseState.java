@@ -1,23 +1,22 @@
 package com.dmm.stateMachine.machine;
 
-import com.dmm.stateMachine.state.StateType;
 
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author: zhangxun
  * @create: 2023-08-14 15:08
  * @description:
  **/
-public abstract class StateAdapter implements IState {
-    private final Logger log = Logger.getLogger(this.getClass().getName());
+@Slf4j
+public abstract class BaseState implements IState {
 
-
-    public StateAdapter() {
+    public BaseState() {
     }
 
     private boolean started = false;
 
+    @Override
     public boolean isStarted() {
         return this.started;
     }
@@ -43,28 +42,23 @@ public abstract class StateAdapter implements IState {
 
     @Override
     public long getTimeout() {
-        // 默认没有超时时间
+        // 默认没有超时时间。
         return -1;
     }
 
-    @Override
-    public String finishTimeout(StateData data) {
-        return StateType.BIG_ROUND_END_START_CODE;
-    }
+    // region 提供默认的出错实现
 
-    /*
-    region 默认异常 begin
-     */
     @Override
     public void onInitializeError(Exception e, StateData data) {
         data.needUpdate = false;
-        log.warning("onInitializeError " + (e == null ? "null exception" : e.getMessage()));
+        log.error("onInitializeError {}", e.getMessage());
     }
 
     @Override
     public void onUpdateError(Exception e, StateData data) {
         data.finish = true;
-        log.warning("onUpdateError " + (e == null ? "null exception" : e.getMessage()));
+        log.error("onUpdateError {}", e.getMessage());
     }
-    // region 默认异常 end
+
+    //endregion
 }

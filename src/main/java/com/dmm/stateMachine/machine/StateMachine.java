@@ -51,6 +51,10 @@ public class StateMachine<TState extends IState> {
     return this.currentState.state.getCode();
   }
 
+  public StateWrapper<TState> getCurrentStateWrapper() {
+    return this.currentState;
+  }
+
   /**
    * 刷新状态机逻辑
    * 1. 启动

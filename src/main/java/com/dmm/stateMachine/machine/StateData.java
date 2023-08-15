@@ -7,6 +7,7 @@ package com.dmm.stateMachine.machine;
  **/
 public class StateData {
 
+  // do processor
   public boolean needUpdate = true;
 
   public boolean finish = false;
