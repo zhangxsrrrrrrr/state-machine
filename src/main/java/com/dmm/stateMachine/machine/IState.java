@@ -1,4 +1,4 @@
-package com.dmm.stateMachine;
+package com.dmm.stateMachine.machine;
 
 /**
  * @author: zhangxun
@@ -58,7 +58,7 @@ public interface IState {
   void onUpdateError(Exception e, StateData data);
 
   /**
-   * 状态执行结束了
+   * 状态执行结束了，返回下一个状态的code
    */
   String finish(StateData data) throws Exception;
 

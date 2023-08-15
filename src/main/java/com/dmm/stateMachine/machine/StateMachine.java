@@ -1,4 +1,6 @@
-package com.dmm.stateMachine;
+package com.dmm.stateMachine.machine;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +12,8 @@ import java.util.logging.Logger;
  * @create: 2023-07-19  13:39
  * @description: 状态机
  **/
+@Slf4j
 public class StateMachine<TState extends IState> {
-  private static final Logger log = Logger.getLogger(StateMachine.class.getName());
 
   /**
    * 存储状态的map
@@ -37,14 +39,9 @@ public class StateMachine<TState extends IState> {
     }
   }
 
-  public void start(String stateCode) {
+  public void start(String firstState) {
     this.running = true;
-    this.currentState = stateContainer.get(stateCode);
-    if (currentState == null) {
-      throw new IllegalStateException("stateCode is " + stateCode + " can not be found in stateContainer.");
-    }
-    this.currentState.data.reset();
-    this.currentState.state.reset();
+    this.switchToState(firstState);
   }
 
   public String getCurrentStateCode() {
@@ -63,12 +60,12 @@ public class StateMachine<TState extends IState> {
    */
   public void update() {
     if (!running) {
-      log.warning("state machine is not started.");
+      log.warn("state machine is not started.");
       return;
     }
     StateWrapper<TState> currentStateWrapper = this.currentState;
     if (currentStateWrapper == null) {
-      log.warning("The current state is idle/unused.");
+      log.warn("The current state is idle/unused.");
       return;
     }
 
@@ -91,7 +88,7 @@ public class StateMachine<TState extends IState> {
         String nextStateCode = state.finish(data);
         switchToState(nextStateCode);
       } catch (Exception e) {
-        log.warning(state.getCode() +" without update finish exception: " + e.getMessage());
+        log.warn(state.getCode() +" without update finish exception: " + e.getMessage());
         String nextState = state.onFinishError(false, e, data);
         this.switchToState(nextState);
       }
@@ -110,7 +107,7 @@ public class StateMachine<TState extends IState> {
         String nextState = state.finish(data);
         this.switchToState(nextState);
       } catch (Exception e) {
-        log.warning(state.getCode() +" without update finish exception: " + e.getMessage());
+        log.warn(state.getCode() +" without update finish exception: " + e.getMessage());
         String nextState = state.onFinishError(false, e, data);
         this.switchToState(nextState);
       }
@@ -121,11 +118,11 @@ public class StateMachine<TState extends IState> {
     long timeout = state.getTimeout();
     if (timeout > 0 && System.currentTimeMillis() - state.getStartTime() >= timeout) {
       try {
-        log.warning(state.getCode() + " timeout!");
+        log.warn(state.getCode() + " timeout!");
         String nextState = state.finishTimeout(data);
         this.switchToState(nextState);
       } catch (Exception e) {
-        log.warning(state.getCode() +" without update finish exception: " + e.getMessage());
+        log.warn(state.getCode() +" without update finish exception: " + e.getMessage());
         String nextState = state.onFinishError(true, e, data);
         this.switchToState(nextState);
       }
@@ -141,11 +138,13 @@ public class StateMachine<TState extends IState> {
 
     this.currentState = this.stateContainer.get(stateCode);
     if (null == this.currentState) {
-      log.warning("Try to switch to invalid state: " + stateCode);
+      log.warn("Try to switch to invalid state: " + stateCode);
       return;
     }
 
     this.currentState.data.reset();
     this.currentState.state.reset();
   }
+
+
 }

@@ -1,4 +1,4 @@
-package com.dmm.stateMachine;
+package com.dmm.stateMachine.machine;
 
 /**
  * @author: zhangxun
